@@ -54,7 +54,7 @@ public class BaseTest {
 			test.addScreenCaptureFromBase64String(screenshotPath);
 			
 		}else if(result.getStatus()== ITestResult.SUCCESS) {
-			test.pass("Test Passed");
+			test.pass("Test Passed Successfully");
 		}else {
 			test.skip("Test Skipped");
 		}
