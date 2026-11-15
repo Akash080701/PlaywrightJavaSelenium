@@ -23,7 +23,7 @@ import utils.ExtentManager;
 import utils.ScreenshotUtils;
 
 public class BaseTest {
-	
+
 	protected Playwright playwright;
 	protected Browser browser;
 	protected Page page;
@@ -31,40 +31,42 @@ public class BaseTest {
 	protected Download download;
 	protected ExtentReports extent;
 	protected ExtentTest test;
-	
+
 	@BeforeMethod
 	public void setUp(Method method) {
-		
+
 		extent = ExtentManager.getInstance();
 		test = extent.createTest(method.getName());
-		
-		
+
 		playwright = Playwright.create();
-		browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(1000).setArgs(Arrays.asList("--start-maximized")));
+		browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(1000)
+				.setArgs(Arrays.asList("--start-maximized")));
 		context = browser.newContext(new Browser.NewContextOptions().setViewportSize(null));
-		page = context.newPage();	}
-	
+		page = context.newPage();
+		page.setDefaultTimeout(4000);
+	}
+
 	@AfterMethod
 	public void tearDown(ITestResult result) {
-		
-		if(result.getStatus()== ITestResult.FAILURE) {
+
+		if (result.getStatus() == ITestResult.FAILURE) {
 			test.fail(result.getThrowable());
-			
-			String screenshotPath = ScreenshotUtils.takeScreenshotBase64(	page, result.getName());
+
+			String screenshotPath = ScreenshotUtils.takeScreenshotBase64(page, result.getName());
 			test.addScreenCaptureFromBase64String(screenshotPath);
-			
-		}else if(result.getStatus()== ITestResult.SUCCESS) {
+
+		} else if (result.getStatus() == ITestResult.SUCCESS) {
 			test.pass("Test Passed Successfully");
-		}else {
+		} else {
 			test.skip("Test Skipped");
 		}
-		
+
 		extent.flush();
-		
-		
-		if (browser!= null)browser.close();
-		if (playwright!= null)playwright.close();
+
+		if (browser != null)
+			browser.close();
+		if (playwright != null)
+			playwright.close();
 	}
-	
 
 }
