@@ -7,7 +7,7 @@ on:
     branches: [ main ]
   workflow_dispatch:          # lets you run it manually from GitHub
   schedule:
-  - cron: '43 6 * * *'     # daily, 18:30 UTC = 00:00 IST
+    - cron: '30 18 * * *'     # daily, 18:30 UTC = 00:00 IST
 
 jobs:
   test:
