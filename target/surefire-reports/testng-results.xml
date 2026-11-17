@@ -2,12 +2,12 @@
 <testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2026-11-13T13:14:49 IST" name="PlaywrightSuite" finished-at="2026-11-13T13:15:05 IST" duration-ms="15809">
+  <suite started-at="2026-11-17T11:50:52 IST" name="PlaywrightSuite" finished-at="2026-11-17T11:51:04 IST" duration-ms="11671">
     <groups>
     </groups>
-    <test started-at="2026-11-13T13:14:49 IST" name="LoginTests" finished-at="2026-11-13T13:15:05 IST" duration-ms="15730">
+    <test started-at="2026-11-17T11:50:52 IST" name="LoginTests" finished-at="2026-11-17T11:51:04 IST" duration-ms="11607">
       <class name="tests.LoginTest">
-        <test-method is-config="true" signature="setUp(java.lang.reflect.Method)[pri:0, instance:tests.LoginTest@13e39c73]" started-at="2026-11-13T13:14:49 IST" name="setUp" finished-at="2026-11-13T13:14:58 IST" duration-ms="8477" status="PASS">
+        <test-method is-config="true" signature="setUp(java.lang.reflect.Method)[pri:0, instance:tests.LoginTest@7e0b85f9]" started-at="2026-11-17T11:50:52 IST" name="setUp" finished-at="2026-11-17T11:50:59 IST" duration-ms="6975" status="PASS">
           <params>
             <param index="0">
               <value>
@@ -18,15 +18,15 @@
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setUp -->
-        <test-method signature="loginPage()[pri:0, instance:tests.LoginTest@13e39c73]" started-at="2026-11-13T13:14:58 IST" name="loginPage" finished-at="2026-11-13T13:15:04 IST" duration-ms="6148" status="PASS">
+        <test-method signature="loginPage()[pri:0, instance:tests.LoginTest@7e0b85f9]" started-at="2026-11-17T11:50:59 IST" name="loginPage" finished-at="2026-11-17T11:51:03 IST" duration-ms="3810" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- loginPage -->
-        <test-method is-config="true" signature="tearDown(org.testng.ITestResult)[pri:0, instance:tests.LoginTest@13e39c73]" started-at="2026-11-13T13:15:04 IST" name="tearDown" finished-at="2026-11-13T13:15:05 IST" duration-ms="1072" status="PASS">
+        <test-method is-config="true" signature="tearDown(org.testng.ITestResult)[pri:0, instance:tests.LoginTest@7e0b85f9]" started-at="2026-11-17T11:51:03 IST" name="tearDown" finished-at="2026-11-17T11:51:04 IST" duration-ms="782" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[[TestResult name=loginPage status=SUCCESS method=LoginTest.loginPage()[pri:0, instance:tests.LoginTest@13e39c73] output={null}]]]>
+                <![CDATA[[TestResult name=loginPage status=SUCCESS method=LoginTest.loginPage()[pri:0, instance:tests.LoginTest@7e0b85f9] output={null}]]]>
               </value>
             </param>
           </params>
@@ -35,7 +35,7 @@
         </test-method> <!-- tearDown -->
       </class> <!-- tests.LoginTest -->
     </test> <!-- LoginTests -->
-    <test started-at="2026-11-13T13:15:05 IST" name="HomePageTests" finished-at="2026-11-13T13:15:05 IST" duration-ms="1">
+    <test started-at="2026-11-17T11:51:04 IST" name="HomePageTests" finished-at="2026-11-17T11:51:04 IST" duration-ms="0">
     </test> <!-- HomePageTests -->
   </suite> <!-- PlaywrightSuite -->
 </testng-results>

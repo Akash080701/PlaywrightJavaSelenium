@@ -37,13 +37,26 @@ public class BaseTest {
 
 		extent = ExtentManager.getInstance();
 		test = extent.createTest(method.getName());
+		
+		//Added CI based logic for browser launch
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
 
-		playwright = Playwright.create();
-		browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(1000)
-				.setArgs(Arrays.asList("--start-maximized")));
-		context = browser.newContext(new Browser.NewContextOptions().setViewportSize(null));
-		page = context.newPage();
-		page.setDefaultTimeout(4000);
+        playwright = Playwright.create();
+
+        BrowserType.LaunchOptions options = new BrowserType.LaunchOptions().setHeadless(headless);
+        Browser.NewContextOptions contextOptions = new Browser.NewContextOptions();
+
+        if (headless) {
+            contextOptions.setViewportSize(1920, 1080);
+        } else {
+            options.setArgs(Arrays.asList("--start-maximized"));
+            contextOptions.setViewportSize(null);
+        }
+
+        browser = playwright.chromium().launch(options);
+        context = browser.newContext(contextOptions);
+        page = context.newPage();
+//		page.setDefaultTimeout(4000);
 	}
 
 	@AfterMethod
