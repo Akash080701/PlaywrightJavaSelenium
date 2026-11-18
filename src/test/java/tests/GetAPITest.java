@@ -72,7 +72,7 @@ public class GetAPITest {
 		System.out.println("response apiHeaders in API:"+apiHeaders);
 		Assert.assertEquals(apiHeaders.get("content-type"), "application/json");
 		
-		
+		//
 	}
 
 }
