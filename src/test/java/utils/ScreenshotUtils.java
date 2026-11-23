@@ -11,24 +11,25 @@ import com.microsoft.playwright.Page;
 
 public class ScreenshotUtils {
 
-    // Saves the screenshot to disk AND returns it as base64
-    public static String takeScreenshotBase64(Page page, String testName) {
-        try {
-            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	// Saves the screenshot to disk AND returns it as base64
+	public static String takeScreenshotBase64(Page page, String testName) {
+		try {
+			String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS").format(new Date());
+			long threadId = Thread.currentThread().getId();
 
-            Path folder = Paths.get("test-output", "FailureScreenshots");
-            Files.createDirectories(folder);
+			Path folder = Paths.get("test-output", "FailureScreenshots");
+			Files.createDirectories(folder);
 
-            Path file = folder.resolve(testName + "_" + timestamp + ".png");
+			Path file = folder.resolve(testName + "_T" + threadId + "_" + timestamp + ".png");
 
-            byte[] bytes = page.screenshot(new Page.ScreenshotOptions()
-                    .setPath(file)
-                    .setFullPage(true));
+			byte[] bytes = page.screenshot(new Page.ScreenshotOptions()
+					.setPath(file)
+					.setFullPage(true));
 
-            return Base64.getEncoder().encodeToString(bytes);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+			return Base64.getEncoder().encodeToString(bytes);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

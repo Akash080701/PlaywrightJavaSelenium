@@ -3,12 +3,10 @@ package base;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import javax.naming.Context;
-
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeMethod;
-import org.testng.internal.annotations.ITest;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
@@ -24,62 +22,125 @@ import utils.ScreenshotUtils;
 
 public class BaseTest {
 
-	protected Playwright playwright;
-	protected Browser browser;
-	protected Page page;
-	protected BrowserContext context;
-	protected Download download;
-	protected ExtentReports extent;
-	protected ExtentTest test;
+	private static final ThreadLocal<Playwright> tlPlaywright = new ThreadLocal<>();
+	private static final ThreadLocal<Browser> tlBrowser = new ThreadLocal<>();
+	private static final ThreadLocal<BrowserContext> tlContext = new ThreadLocal<>();
+	private static final ThreadLocal<Page> tlPage = new ThreadLocal<>();
+	private static final ThreadLocal<Download> tlDownload = new ThreadLocal<>();
+	private static final ThreadLocal<ExtentTest> tlTest = new ThreadLocal<>();
 
-	@BeforeMethod
+	public static Playwright getPlaywright() {
+		return tlPlaywright.get();
+	}
+
+	public static Browser getBrowser() {
+		return tlBrowser.get();
+	}
+
+	public static BrowserContext getContext() {
+		return tlContext.get();
+	}
+
+	public static Page getPage() {
+		return tlPage.get();
+	}
+
+	public static Download getDownload() {
+		return tlDownload.get();
+	}
+
+	public static void setDownload(Download download) {
+		tlDownload.set(download);
+	}
+
+	public static ExtentTest getTest() {
+		return tlTest.get();
+	}
+
+	@BeforeMethod(alwaysRun = true)
 	public void setUp(Method method) {
 
-		extent = ExtentManager.getInstance();
-		test = extent.createTest(method.getName());
-		
-		//Added CI based logic for browser launch
-        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
+		ExtentReports extent = ExtentManager.getInstance();
+		ExtentTest extentTest = extent.createTest(method.getDeclaringClass().getSimpleName() + " - " + method.getName());
+		tlTest.set(extentTest);
 
-        playwright = Playwright.create();
+		// Added CI based logic for browser launch
+		boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
 
-        BrowserType.LaunchOptions options = new BrowserType.LaunchOptions().setHeadless(headless);
-        Browser.NewContextOptions contextOptions = new Browser.NewContextOptions();
+		Playwright playwright = Playwright.create();
+		tlPlaywright.set(playwright);
 
-        if (headless) {
-            contextOptions.setViewportSize(1920, 1080);
-        } else {
-            options.setArgs(Arrays.asList("--start-maximized"));
-            contextOptions.setViewportSize(null);
-        }
+		BrowserType.LaunchOptions options = new BrowserType.LaunchOptions().setHeadless(headless);
+		Browser.NewContextOptions contextOptions = new Browser.NewContextOptions();
 
-        browser = playwright.chromium().launch(options);
-        context = browser.newContext(contextOptions);
-        page = context.newPage();
+		if (headless) {
+			contextOptions.setViewportSize(1920, 1080);
+		} else {
+			options.setArgs(Arrays.asList("--start-maximized"));
+			contextOptions.setViewportSize(null);
+		}
+
+		Browser browser = playwright.chromium().launch(options);
+		tlBrowser.set(browser);
+
+		BrowserContext context = browser.newContext(contextOptions);
+		tlContext.set(context);
+
+		Page page = context.newPage();
+		tlPage.set(page);
 //		page.setDefaultTimeout(4000);
 	}
 
-	@AfterMethod
+	@AfterMethod(alwaysRun = true)
 	public void tearDown(ITestResult result) {
 
-		if (result.getStatus() == ITestResult.FAILURE) {
-			test.fail(result.getThrowable());
+		ExtentTest currentTest = getTest();
+		Page currentPage = getPage();
 
-			String screenshotPath = ScreenshotUtils.takeScreenshotBase64(page, result.getName());
-			test.addScreenCaptureFromBase64String(screenshotPath);
+		if (currentTest != null) {
+			if (result.getStatus() == ITestResult.FAILURE) {
+				currentTest.fail(result.getThrowable());
 
-		} else if (result.getStatus() == ITestResult.SUCCESS) {
-			test.pass("Test Passed Successfully");
-		} else {
-			test.skip("Test Skipped");
+				if (currentPage != null) {
+					String screenshotPath = ScreenshotUtils.takeScreenshotBase64(currentPage, result.getName());
+					if (screenshotPath != null) {
+						currentTest.addScreenCaptureFromBase64String(screenshotPath);
+					}
+				}
+
+			} else if (result.getStatus() == ITestResult.SUCCESS) {
+				currentTest.pass("Test Passed Successfully");
+			} else {
+				currentTest.skip("Test Skipped");
+			}
 		}
 
-		extent.flush();
+		if (currentPage != null) {
+			currentPage.close();
+			tlPage.remove();
+		}
+		if (getContext() != null) {
+			getContext().close();
+			tlContext.remove();
+		}
+		if (getBrowser() != null) {
+			getBrowser().close();
+			tlBrowser.remove();
+		}
+		if (getPlaywright() != null) {
+			getPlaywright().close();
+			tlPlaywright.remove();
+		}
 
-		if (browser != null)
-			browser.close();
-		if (playwright != null)
-			playwright.close();
+		tlDownload.remove();
+		tlTest.remove();
 	}
 
+	@AfterSuite(alwaysRun = true)
+	public void flushReport() {
+		ExtentReports extent = ExtentManager.getInstance();
+		if (extent != null) {
+			extent.flush();
+		}
+	}
 }
